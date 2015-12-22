@@ -4,22 +4,19 @@ var userController = require('../controllers/users.js');
 var ideaController = require('../controllers/ideas.js');
 var clusterController = require('../controllers/clusters.js');
 
-
-//Users API endpoint 
+//Users API endpoint
 router.route('/users')
-    .post(userController.postUser)
-    .get(userController.getUsers);
+    .get(userController.getUsers)
+    .post(userController.postUser);
 
-router.route('/users/:id')
-    .put(userController.putUser)
-    .get(userController.getUser)
-    .delete(userController.deleteUser);
+router.route('/users/clusters')
+    .get(clusterController.getClusters)
+    .post(clusterController.postCluster)
+    .delete(clusterController.deleteCluster);
 
-router.route('/users/:id/clusters/:cluster_id)
-    .put(clusterController.putCluster)
-    .get(clusterController.getCluster)
-    .post(clusterController.createCluster)
-    .delete(clusteController.deleteCluster)
-    .post(clusterController.postIdea);
+router.route('/users/ideas')
+    .get(ideaController.getIdeas)
+    .post(ideaController.postIdea)
+    .delete(ideaController.deleteIdea);
 
 module.exports = router;

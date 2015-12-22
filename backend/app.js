@@ -2,7 +2,6 @@
 * @Author: David Zhang
 * @Description: A NodeJS REST api for IdeaList
 */
-
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 8800;
