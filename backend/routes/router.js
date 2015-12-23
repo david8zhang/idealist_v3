@@ -3,20 +3,24 @@ var router = express.Router();
 var userController = require('../controllers/users.js');
 var ideaController = require('../controllers/ideas.js');
 var clusterController = require('../controllers/clusters.js');
+var authController = require('../controllers/authcontroller.js');
 
 //Users API endpoint
-router.route('/users')
+router.route('/users/register')
     .get(userController.getUsers)
-    .post(userController.postUser);
+    .post(userController.createUser);
+
+router.route('/users/login')
+    .post(userController.authUser);
 
 router.route('/users/clusters')
-    .get(clusterController.getClusters)
-    .post(clusterController.postCluster)
-    .delete(clusterController.deleteCluster);
+    .get(authController.authToken, clusterController.getClusters)
+    .post(authController.authToken, clusterController.postCluster)
+    .delete(authController.authToken, clusterController.deleteCluster);
 
 router.route('/users/ideas')
-    .get(ideaController.getIdeas)
-    .post(ideaController.postIdea)
-    .delete(ideaController.deleteIdea);
+    .get(authController.authToken, ideaController.getIdeas)
+    .post(authController.authToken, ideaController.postIdea)
+    .delete(authController.authToken, ideaController.deleteIdea);
 
 module.exports = router;
