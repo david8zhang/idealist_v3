@@ -11,7 +11,7 @@ exports.getClusters = function(req, res) {
     params.ExpressionAttributeValues = {
         ":userid": id
     }
-    params.FilterExpression = "userid = :userid";
+    params.FilterExpression = "user_id = :userid";
     docClient.scan(params, function(err, data) {
         if(err) {
             res.send(err);
