@@ -11,7 +11,7 @@ exports.createUser = function(req, res) {
 
     var userid = sha1("user" + Math.floor(Date.now() / 1000).toString());
     var login_timestamp = Math.floor(Date.now()).toString();
-    var email = req.body.name;
+    var email = req.body.email;
     var password = req.body.password;
     var username = req.body.username;
     var access_token = Math.floor(Date.now() / 1000).toString();

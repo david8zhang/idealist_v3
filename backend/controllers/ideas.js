@@ -16,7 +16,7 @@ exports.getIdeas = function(req, res) {
         if(err) {
             res.send(err);
         } else {
-            res.json(jsonString);
+            res.json(data);
         }
     });
 };
