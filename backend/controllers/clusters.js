@@ -25,6 +25,7 @@ exports.getClusters = function(req, res) {
 
 /** POST a new cluster. */
 exports.postCluster = function(req, res) {
+    var auth_token = req.headers.authorization.toString().substring(7);
     var clusterid = sha1("clus" + Math.floor(Date.now() / 1000).toString());
     var userid = req.body.userid;
     var name = req.body.name;

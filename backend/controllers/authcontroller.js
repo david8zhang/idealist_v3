@@ -31,29 +31,4 @@ passport.use(new passportBearer.Strategy(
 );
 
 
-passport.use(new passportLocal.Strategy(
-    function(username, password, done) {
-        var params = {};
-        params.TableName = 'idealist_users';
-        params.FilterExpression = "username=:username OR username=:email AND password=:password";
-        params.ExpressionAttributeValues = {
-            ':username':username,
-            ':email':username,
-            ':password':password
-        };
-        docClient.scan(params, function(err, data) {
-            if(err) {
-                return done(err); 
-            } else {
-                if(jsonString["Count"] == 0) {
-                    return done(null, false);
-                } else {
-                    var access_token = data.Items[0].access_token;
-                    return done(null, access_token, { scope: 'all' });
-                }
-            }
-        })
-    })
-);
 exports.authToken = passport.authenticate('bearer', { session: false });
-exports.authUser = passport.authenticate('bearer', { session: false} );

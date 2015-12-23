@@ -4,10 +4,7 @@ var express = require('express');
 var AWS = require ('aws-sdk');
 var docClient = new AWS.DynamoDB.DocumentClient({region: 'us-west-2'});
 var sha1 = require('sha1');
-
-//Get all the users in the table
-exports.getUsers = function(req, res) {   
-};
+var authController = require('../controllers/authcontroller');
 
 //Post a user
 exports.createUser = function(req, res) {
@@ -17,11 +14,11 @@ exports.createUser = function(req, res) {
     var email = req.body.name;
     var password = req.body.password;
     var username = req.body.username;
-    var access_token = username + "&" + Math.floor(Date.now() / 1000).toString();
+    var access_token = Math.floor(Date.now() / 1000).toString();
     var params = {};
 
     //Params for the user
-    params.TableName = 'idealist-users';
+    params.TableName = 'idealist_users';
     params.Item = {
         user_id: userid,
         login_timestamp,
@@ -31,18 +28,39 @@ exports.createUser = function(req, res) {
         access_token: access_token
     };
     // Put the item
-    docClient.putItem(params, function(err, data) {
+    docClient.put(params, function(err, data) {
         if(err) {
             res.send(err);
         } else {
-            res.json({ message: 'User was added!', data: user });
+            res.status(200).send("Success! User was created!");
         }
     });
 };
 
-//Delete a user
-exports.deleteUser = function(req, res) {
-};
-
 exports.authUser = function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+
+    var params = {};
+    params.TableName = 'idealist_users';
+    params.FilterExpression = "username=:username AND password=:password";
+    params.ExpressionAttributeValues = {
+        ':username': username,
+        ':password': password,
+    };
+    docClient.scan(params, function(err, data) {
+        if(err) {
+            res.send(err);
+        } else {
+            var jsonString = JSON.parse(JSON.stringify(data));
+            console.log(jsonString);
+            if(jsonString["Count"] == 0) {
+                res.status(403).send('Account does not exist!');
+            } else {
+                var user_token = data.Items[0].access_token;
+                res.send(user_token);
+            }
+        }
+    });
+
 };

@@ -7,7 +7,6 @@ var authController = require('../controllers/authcontroller.js');
 
 //Users API endpoint
 router.route('/users/register')
-    .get(userController.getUsers)
     .post(userController.createUser);
 
 router.route('/users/login')
