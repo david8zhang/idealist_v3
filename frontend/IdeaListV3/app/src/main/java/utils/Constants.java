@@ -6,5 +6,8 @@ package utils;
 public class Constants {
 
     /** API Links. */
-    public static String USER_LOGIN = "https://rocky-journey-9508.herokuapp.com/api/";
+    public static String USER_LOGIN = "https://rocky-journey-9508.herokuapp.com/api/users/login";
+    public static String USER_REGISTER = "https://rocky-journey-9508.herokuapp.com/api/users/register";
+    public static String CLUSTERS = "https://rocky-journey-9508.herokuapp.com/api/users/clusters";
+    public static String IDEAS = "https://rocky-journey-9508.herokuapp.com/api/users/ideas";
 }
