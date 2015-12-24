@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.david_000.model.FeedItem;
+import com.example.david_000.model.Idea;
 import com.example.david_000.view.R;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
 
     /** The List of FeedItems, or ideas.*/
-    private List<FeedItem> ideaList;
+    private List<Idea> ideaList;
 
     /**
      * The View holder that provides a reference to the views for
@@ -58,7 +58,7 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
      */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        FeedItem item = ideaList.get(position);
+        Idea item = ideaList.get(position);
         String name = item.getIdeaTitle();
         String cat = item.getIdeaCategory();
         String desc = item.getIdeaText();

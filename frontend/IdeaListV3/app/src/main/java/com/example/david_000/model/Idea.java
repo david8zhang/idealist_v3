@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by david_000 on 12/20/2015.
  */
-public class FeedItem{
+public class Idea {
 
     /** The idea title, category and text. */
     private String ideaTitle, ideaCategory, ideaText;
@@ -13,11 +13,11 @@ public class FeedItem{
     /** The sketch image. */
     private Bitmap image;
 
-    public FeedItem(){
+    public Idea(){
 
     }
 
-    public FeedItem(String ideaTitle, String ideaCategory, String ideaText, Bitmap image){
+    public Idea(String ideaTitle, String ideaCategory, String ideaText, Bitmap image){
         super();
         this.ideaTitle = ideaTitle;
         this.ideaCategory = ideaCategory;
