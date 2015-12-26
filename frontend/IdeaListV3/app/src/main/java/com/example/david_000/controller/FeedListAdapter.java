@@ -59,9 +59,9 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Idea item = ideaList.get(position);
-        String name = item.getIdeaTitle();
-        String cat = item.getIdeaCategory();
-        String desc = item.getIdeaText();
+        String name = item.getName();
+        String cat = item.getCategory();
+        String desc = item.getDescription();
         Bitmap img = item.getImage();
 
         ImageView imgView = (ImageView)holder.mCardView.findViewById(R.id.idea_sketch);

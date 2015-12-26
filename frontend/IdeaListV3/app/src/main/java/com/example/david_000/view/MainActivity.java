@@ -1,18 +1,23 @@
 package com.example.david_000.view;
 
-import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
+
+import com.example.david_000.model.Cluster;
+import com.example.david_000.utils.DbUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
     /** The content layout. */
     private LinearLayout mContentLayout;
+
+    /** List of clusters. */
+    private List<Cluster> clusters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +39,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void setContentView(int layoutResId) {
+        DbUtil util = new DbUtil();
         super.setContentView(R.layout.activity_base);
+
+        clusters = new ArrayList<Cluster>();
+
+        //Test the api endpoint
+        util.fetchCluster();
     }
 }

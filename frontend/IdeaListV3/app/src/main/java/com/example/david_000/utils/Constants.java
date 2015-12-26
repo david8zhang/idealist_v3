@@ -1,4 +1,4 @@
-package utils;
+package com.example.david_000.utils;
 
 /**
  * Created by david_000 on 12/24/2015.
