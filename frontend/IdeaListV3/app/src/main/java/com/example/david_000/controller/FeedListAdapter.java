@@ -1,25 +1,33 @@
 package com.example.david_000.controller;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.david_000.model.Idea;
+import com.example.david_000.model.FeedItem;
 import com.example.david_000.view.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by david_000 on 12/20/2015.
  */
-public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
+public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<FeedListAdapter.ViewHolder> {
 
     /** The List of FeedItems, or ideas.*/
-    private List<Idea> ideaList;
+    private ArrayList<T> items;
+
+    public FeedListAdapter(ArrayList<T> items) {
+        this.items = items;
+        System.out.println(items.size());
+    }
 
     /**
      * The View holder that provides a reference to the views for
@@ -30,9 +38,26 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
     public static class ViewHolder extends RecyclerView.ViewHolder {
         /** The CardView which corresponds to a feed item. */
         public CardView mCardView;
-        public ViewHolder(CardView v) {
-            super(v);
-            mCardView = v;
+
+        /** The Image associated with the ideas. */
+        public ImageView imgView;
+
+        /** The textview associated with names. */
+        public TextView nameView;
+
+        /** The TextView associated with.*/
+        public TextView catView;
+
+        /** The textview associated with descriptions. */
+        public TextView descView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mCardView = (CardView)itemView.findViewById(R.id.card_view);
+//            imgView = (ImageView)itemView.findViewById(R.id.idea_sketch);
+            nameView = (TextView)itemView.findViewById(R.id.name);
+//            catView = (TextView)itemView.findViewById(R.id.category);
+            descView = (TextView)itemView.findViewById(R.id.description);
         }
     }
 
@@ -44,7 +69,7 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
      */
     @Override
     public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        CardView v = (CardView)LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(parent.getContext())
                                    .inflate(R.layout.feeditem, parent, false);
         ViewHolder vh = new ViewHolder(v);
         return vh;
@@ -58,26 +83,30 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
      */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Idea item = ideaList.get(position);
+        FeedItem item = items.get(position);
         String name = item.getName();
         String cat = item.getCategory();
         String desc = item.getDescription();
         Bitmap img = item.getImage();
 
-        ImageView imgView = (ImageView)holder.mCardView.findViewById(R.id.idea_sketch);
-        TextView nameView = (TextView)holder.mCardView.findViewById(R.id.name);
-        TextView catView = (TextView)holder.mCardView.findViewById(R.id.category);
-        TextView descView = (TextView)holder.mCardView.findViewById(R.id.description);
+//        ImageView imgView = holder.imgView;
+        TextView nameView = holder.nameView;
+//        TextView catView = holder.catView;
+        TextView descView = holder.descView;
 
         nameView.setText(name);
-        catView.setText(cat);
         descView.setText(desc);
-
-        if(img != null) {
-            imgView.setImageBitmap(img);
-        } else {
-            imgView.setVisibility(imgView.INVISIBLE);
-        }
+//
+//        if(img != null) {
+//            imgView.setImageBitmap(img);
+//        } else {
+//            imgView.setVisibility(View.INVISIBLE);
+//        }
+//        if(cat != null) {
+//            catView.setText(cat);
+//        } else {
+//            catView.setVisibility(View.INVISIBLE);
+//        }
     }
 
     /**
@@ -86,6 +115,6 @@ public class FeedListAdapter extends RecyclerView.Adapter<FeedListAdapter.ViewHo
      */
     @Override
     public int getItemCount() {
-        return ideaList.size();
+        return items.size();
     }
 }

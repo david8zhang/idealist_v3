@@ -5,11 +5,12 @@ import android.graphics.Bitmap;
 /**
  * Created by david_000 on 12/26/2015.
  */
-public class FeedItem {
+public class FeedItem implements Comparable {
 
     /** Attributes of a feeditem. */
     private String parent_id;
     private String item_id;
+    private String timestamp;
     private String name;
     private String description;
     private String category;
@@ -17,8 +18,9 @@ public class FeedItem {
 
     public FeedItem() {}
 
-    public FeedItem(String parent_id, String item_id, String name, String description, String category, Bitmap image) {
+    public FeedItem(String parent_id, String timestamp, String item_id, String name, String description, String category, Bitmap image) {
         this.item_id = item_id;
+        this.timestamp = timestamp;
         this.parent_id = parent_id;
         this.name = name;
         this.description = description;
@@ -76,6 +78,14 @@ public class FeedItem {
         this.parent_id = parent_id;
     }
 
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public String toString() {
         return  "parent_id: " + parent_id + "\n"
@@ -84,4 +94,12 @@ public class FeedItem {
                 + "description: " + description + "\n"
                 + "category: " + category + "\n";
     }
+
+    @Override
+    public int compareTo(Object o) {
+        FeedItem feedItem = (FeedItem)o;
+        return item_id.compareTo(feedItem.getItemId());
+    }
+
+
 }

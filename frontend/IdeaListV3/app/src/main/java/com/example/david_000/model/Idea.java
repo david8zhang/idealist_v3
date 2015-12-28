@@ -9,8 +9,8 @@ public class Idea extends FeedItem{
 
     public Idea() {}
 
-    public Idea(String cluster_id, String idea_id, String name, String category, String description, Bitmap image) {
-        super(cluster_id, idea_id, name, category, description, image);
+    public Idea(String cluster_id, String idea_time, String idea_id, String name, String category, String description, Bitmap image) {
+        super(cluster_id, idea_time, idea_id, name, category, description, image);
     }
 
 }
