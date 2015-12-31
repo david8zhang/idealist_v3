@@ -5,8 +5,10 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.david_000.controller.AppController;
+import com.example.david_000.controller.DataModelController;
 import com.example.david_000.controller.FeedListAdapter;
 import com.example.david_000.model.Cluster;
+import com.example.david_000.model.Idea;
 import com.example.david_000.utils.Constants;
 import com.example.david_000.utils.Utils;
 
@@ -30,6 +32,12 @@ public class ApiManager {
         utils = new Utils();
     }
 
+    /** Fetch a list of ideas given the cluster_id. */
+    public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
+        DataModelController dmc = DataModelController.getInstance();
+        System.out.println(dmc.getItemID());
+    }
+
     /** Fetch a list of clusters given the user_id. */
     public void fetchCluster(final ArrayList<Cluster> clusters, final FeedListAdapter listAdapter) {
         Map<String, String> headers = new HashMap<String, String>();
@@ -38,6 +46,7 @@ public class ApiManager {
         String clusterUrl = Constants.CLUSTERS + "?userid=0bfc174eef549715f1448496b854dd810a8a72cb";
         Cache cache = AppController.getInstance().getRequestQueue().getCache();
         Cache.Entry entry = cache.get(clusterUrl);
+        //TODO: Prevent this goddamn thing from making two requests when the device is rotated
         if(entry != null) {
             //fetch the data from cache
             try {

@@ -1,20 +1,7 @@
 package com.example.david_000.utils;
 
-import android.widget.ListAdapter;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.david_000.api.ClusterRequest;
-import com.example.david_000.controller.AppController;
-import com.example.david_000.controller.DataModelController;
 import com.example.david_000.controller.FeedListAdapter;
 import com.example.david_000.model.Cluster;
-import com.example.david_000.model.FeedItem;
-import com.example.david_000.model.Idea;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +43,7 @@ public class Utils {
         }
     }
 
+    /** Check if a cluster already exists by comparing its id. */
     public boolean isContainsCluster(Cluster cluster, ArrayList<Cluster> clusters) {
         for(Cluster c: clusters) {
             if(cluster.getItemId().equals(c.getItemId())) {

@@ -1,7 +1,9 @@
 package com.example.david_000.controller;
 
-import android.app.Activity;
+
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.david_000.model.FeedItem;
+import com.example.david_000.view.IdealistActivity;
+import com.example.david_000.view.MainActivity;
 import com.example.david_000.view.R;
 
 import java.util.ArrayList;
@@ -24,9 +28,15 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
     /** The List of FeedItems, or ideas.*/
     private ArrayList<T> items;
 
-    public FeedListAdapter(ArrayList<T> items) {
+    /** The current context. */
+    private Context mContext;
+
+    /** The data model controller. */
+    private DataModelController dmc = DataModelController.getInstance();
+
+    public FeedListAdapter(ArrayList<T> items, Context context) {
         this.items = items;
-        System.out.println(items.size());
+        mContext = context;
     }
 
     /**
@@ -51,12 +61,15 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         /** The textview associated with descriptions. */
         public TextView descView;
 
+        /** The clusterid associated with this viewholder. */
+        public String itemId;
+
         public ViewHolder(View itemView) {
             super(itemView);
             mCardView = (CardView)itemView.findViewById(R.id.card_view);
-//            imgView = (ImageView)itemView.findViewById(R.id.idea_sketch);
+            imgView = (ImageView)itemView.findViewById(R.id.idea_sketch);
             nameView = (TextView)itemView.findViewById(R.id.name);
-//            catView = (TextView)itemView.findViewById(R.id.category);
+            catView = (TextView)itemView.findViewById(R.id.category);
             descView = (TextView)itemView.findViewById(R.id.description);
         }
     }
@@ -71,7 +84,20 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
     public FeedListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                                    .inflate(R.layout.feeditem, parent, false);
-        ViewHolder vh = new ViewHolder(v);
+        final ViewHolder vh = new ViewHolder(v);
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dmc.getIsCluster() == true) {
+                    Intent intent = new Intent(mContext, IdealistActivity.class);
+                    mContext.startActivity(intent);
+                    dmc.setItemID(vh.itemId);
+                    dmc.setIsCluster(false);
+                } else {
+                    System.out.println("Looking at ideas right now");
+                }
+            }
+        });
         return vh;
     }
 
@@ -89,24 +115,25 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         String desc = item.getDescription();
         Bitmap img = item.getImage();
 
-//        ImageView imgView = holder.imgView;
+        ImageView imgView = holder.imgView;
         TextView nameView = holder.nameView;
-//        TextView catView = holder.catView;
+        TextView catView = holder.catView;
         TextView descView = holder.descView;
+        holder.itemId = item.getItemId();
 
         nameView.setText(name);
         descView.setText(desc);
-//
-//        if(img != null) {
-//            imgView.setImageBitmap(img);
-//        } else {
-//            imgView.setVisibility(View.INVISIBLE);
-//        }
-//        if(cat != null) {
-//            catView.setText(cat);
-//        } else {
-//            catView.setVisibility(View.INVISIBLE);
-//        }
+
+        if(img != null) {
+            imgView.setImageBitmap(img);
+        } else {
+            imgView.setVisibility(View.GONE);
+        }
+        if(cat != null) {
+            catView.setText(cat);
+        } else {
+            catView.setVisibility(View.GONE);
+        }
     }
 
     /**

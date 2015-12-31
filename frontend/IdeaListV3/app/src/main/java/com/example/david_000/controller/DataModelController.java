@@ -1,6 +1,7 @@
 package com.example.david_000.controller;
 
 import com.example.david_000.model.Cluster;
+import com.example.david_000.model.Idea;
 
 import java.util.ArrayList;
 import java.util.SortedSet;
@@ -17,6 +18,15 @@ public class DataModelController {
 
     /** Instantiate an arraylist of clusters to provide project-wide accessibility.*/
     private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+
+    /** Instantiate an arraylist of ideas to provide project-wide accessibility. */
+    private ArrayList<Idea> ideas = new ArrayList<Idea>();
+
+    /** A boolean dictating if we're currently looking at the clusters or the ideas. */
+    private boolean isCluster = true;
+
+    /** Cluster ID that was clicked (null if none were clicked at all) */
+    private String itemID = null;
 
     public DataModelController() {}
 
@@ -36,5 +46,30 @@ public class DataModelController {
 
     public void setClusters(ArrayList<Cluster> clusters) {
         this.clusters = clusters;
+    }
+
+    /** GETTER and SETTER for Item ID, to determine if user clicked on an item. */
+    public String getItemID() {
+        return itemID;
+    }
+
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
+    }
+
+    public ArrayList<Idea> getIdeas() {
+        return ideas;
+    }
+
+    public void setIdeas(ArrayList<Idea> ideas) {
+        this.ideas = ideas;
+    }
+
+    public boolean getIsCluster() {
+        return isCluster;
+    }
+
+    public void setIsCluster(boolean isCluster) {
+        this.isCluster = isCluster;
     }
 }

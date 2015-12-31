@@ -1,6 +1,6 @@
 package com.example.david_000.view;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +13,15 @@ import com.example.david_000.api.ApiManager;
 import com.example.david_000.controller.DataModelController;
 import com.example.david_000.controller.FeedListAdapter;
 import com.example.david_000.model.Cluster;
+import com.example.david_000.model.Idea;
 import com.example.david_000.utils.Utils;
 
 import java.util.ArrayList;
 
-public class MainActivity extends BaseActivity {
+/**
+ * Created by david_000 on 12/30/2015.
+ */
+public class IdealistActivity extends BaseActivity {
 
     /** The content layout. */
     private LinearLayout mContentLayout;
@@ -29,7 +33,7 @@ public class MainActivity extends BaseActivity {
     private Utils utils;
 
     /** The list of clusters. */
-    private ArrayList<Cluster> clusters;
+    private ArrayList<Idea> ideas;
 
     /** the API manager. */
     private ApiManager apiManager;
@@ -49,20 +53,20 @@ public class MainActivity extends BaseActivity {
 
         // Inflate the child layout
         mContentLayout  = (LinearLayout) findViewById(R.id.content_layout);
-        View childView = getLayoutInflater().inflate(R.layout.activity_main, null);
+        View childView = getLayoutInflater().inflate(R.layout.activity_ideas, null);
         mContentLayout.addView(childView);
 
         // Set up the recycler view.
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView = (RecyclerView)childView.findViewById(R.id.cluster_list);
+        recyclerView = (RecyclerView)childView.findViewById(R.id.idea_list);
         recyclerView.setLayoutManager(llm);
 
         // Instantiate the view adapter.
-        ArrayList<Cluster> clusters = dataModelController.getClusters();
-        listAdapter = new FeedListAdapter<Cluster>(clusters, this);
+        ArrayList<Idea> ideas = dataModelController.getIdeas();
+        listAdapter = new FeedListAdapter<Idea>(ideas, this);
         recyclerView.setAdapter(listAdapter);
-        apiManager.fetchCluster(clusters, listAdapter);
+        apiManager.fetchIdeas(ideas, listAdapter);
     }
 
     @Override
@@ -82,12 +86,16 @@ public class MainActivity extends BaseActivity {
         utils = new Utils();
         dataModelController = DataModelController.getInstance();
         apiManager = new ApiManager();
-        clusters = dataModelController.getClusters();
+        ideas = dataModelController.getIdeas();
     }
 
-    /** Close the app if the user gets to this screen and presses back.*/
+    /** Go back to the clusters view. */
     @Override
     public void onBackPressed() {
-        System.exit(0);
+        dataModelController.setIsCluster(true);
+        finish();
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mainIntent);
     }
 }
