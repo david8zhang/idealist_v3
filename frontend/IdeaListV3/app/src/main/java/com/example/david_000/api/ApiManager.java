@@ -32,7 +32,7 @@ public class ApiManager {
         utils = new Utils();
     }
 
-    //TODO: Rework this so as to avoid having to rewrite code
+    //TODO: Rework this somehow as to avoid having to rewrite code
 
     /** Fetch a list of ideas given the cluster_id. */
     public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
