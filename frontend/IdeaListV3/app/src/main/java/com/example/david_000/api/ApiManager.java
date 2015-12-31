@@ -32,10 +32,46 @@ public class ApiManager {
         utils = new Utils();
     }
 
+    //TODO: Rework this so as to avoid having to rewrite code
+
     /** Fetch a list of ideas given the cluster_id. */
     public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
         DataModelController dmc = DataModelController.getInstance();
-        System.out.println(dmc.getItemID());
+        String clusterId = dmc.getClusterID();
+        System.out.println(clusterId);
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
+        headers.put("Authorization", "Bearer 1450909428");
+        String ideaUrl = Constants.IDEAS + "?clusterid=" + clusterId;
+        System.out.println(ideaUrl);
+        Cache cache = AppController.getInstance().getRequestQueue().getCache();
+        Cache.Entry entry = cache.get(ideaUrl);
+        if(entry != null) {
+            //Fetch the data from cache
+            try {
+                String data = new String(entry.data, "UTF-8");
+                System.out.println(data);
+                utils.parseIdeaJson(new JSONObject(data), listAdapter, ideas);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            GetRequest request = new GetRequest(headers, params, ideaUrl, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject jsonObject) {
+                    System.out.println(jsonObject);
+                    utils.parseIdeaJson(jsonObject, listAdapter, ideas);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    System.out.println(volleyError);
+                }
+            });
+            AppController.getInstance().addToRequestQueue(request);
+        }
     }
 
     /** Fetch a list of clusters given the user_id. */
@@ -58,7 +94,7 @@ public class ApiManager {
                 e.printStackTrace();
             }
         } else {
-            ClusterRequest request = new ClusterRequest(headers, params, clusterUrl, new Response.Listener<JSONObject>() {
+            GetRequest request = new GetRequest(headers, params, clusterUrl, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject jsonObject) {
                     System.out.println(jsonObject);

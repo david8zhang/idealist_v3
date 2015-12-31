@@ -19,14 +19,14 @@ public class DataModelController {
     /** Instantiate an arraylist of clusters to provide project-wide accessibility.*/
     private ArrayList<Cluster> clusters = new ArrayList<Cluster>();
 
-    /** Instantiate an arraylist of ideas to provide project-wide accessibility. */
-    private ArrayList<Idea> ideas = new ArrayList<Idea>();
-
     /** A boolean dictating if we're currently looking at the clusters or the ideas. */
     private boolean isCluster = true;
 
     /** Cluster ID that was clicked (null if none were clicked at all) */
-    private String itemID = null;
+    private String clusterId = null;
+
+    /** Idea ID that was clicked (null if none were clicked at all). */
+    private String ideaId = null;
 
     public DataModelController() {}
 
@@ -49,21 +49,19 @@ public class DataModelController {
     }
 
     /** GETTER and SETTER for Item ID, to determine if user clicked on an item. */
-    public String getItemID() {
-        return itemID;
+    public String getClusterID() {
+        return clusterId;
     }
 
-    public void setItemID(String itemID) {
-        this.itemID = itemID;
+    public void setClusterID(String itemID) {
+        this.clusterId = itemID;
     }
 
-    public ArrayList<Idea> getIdeas() {
-        return ideas;
+    public String getIdeaId() {
+        return ideaId;
     }
 
-    public void setIdeas(ArrayList<Idea> ideas) {
-        this.ideas = ideas;
-    }
+    public void setIdeaId(String ideaID) { this.ideaId = ideaID;}
 
     public boolean getIsCluster() {
         return isCluster;

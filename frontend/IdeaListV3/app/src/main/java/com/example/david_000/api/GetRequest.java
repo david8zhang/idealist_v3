@@ -16,13 +16,13 @@ import java.util.Map;
 /**
  * Created by david_000 on 12/26/2015.
  */
-public class ClusterRequest extends Request<JSONObject> {
+public class GetRequest extends Request<JSONObject> {
 
     private Map<String, String> mParams;
     private Map<String, String> mHeaders;
     private Response.Listener<JSONObject> mListener;
 
-    public ClusterRequest(Map<String, String> headers, Map<String, String> params, String customUrl, Response.Listener<JSONObject> listener,
+    public GetRequest(Map<String, String> headers, Map<String, String> params, String customUrl, Response.Listener<JSONObject> listener,
                           Response.ErrorListener errorListener ) {
         super(Method.GET, customUrl, errorListener);
         mListener = listener;

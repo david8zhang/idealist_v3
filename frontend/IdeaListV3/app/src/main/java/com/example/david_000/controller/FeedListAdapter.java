@@ -62,7 +62,10 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         public TextView descView;
 
         /** The clusterid associated with this viewholder. */
-        public String itemId;
+        public String clusterId;
+
+        /** the idea id associated with this view holder. */
+        public String ideaId;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -88,12 +91,13 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(dmc.getIsCluster() == true) {
+                if(dmc.getIsCluster()) {
                     Intent intent = new Intent(mContext, IdealistActivity.class);
                     mContext.startActivity(intent);
-                    dmc.setItemID(vh.itemId);
+                    dmc.setClusterID(vh.clusterId);
                     dmc.setIsCluster(false);
                 } else {
+                    dmc.setIdeaId(vh.ideaId);
                     System.out.println("Looking at ideas right now");
                 }
             }
@@ -119,7 +123,12 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         TextView nameView = holder.nameView;
         TextView catView = holder.catView;
         TextView descView = holder.descView;
-        holder.itemId = item.getItemId();
+        if(item.getCluster_id() == null) {
+            holder.ideaId = item.getIdea_Id();
+        } else {
+            holder.clusterId = item.getCluster_id();
+
+        }
 
         nameView.setText(name);
         descView.setText(desc);

@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import com.example.david_000.api.ApiManager;
 import com.example.david_000.controller.DataModelController;
 import com.example.david_000.controller.FeedListAdapter;
-import com.example.david_000.model.Cluster;
 import com.example.david_000.model.Idea;
 import com.example.david_000.utils.Utils;
 
@@ -63,7 +62,6 @@ public class IdealistActivity extends BaseActivity {
         recyclerView.setLayoutManager(llm);
 
         // Instantiate the view adapter.
-        ArrayList<Idea> ideas = dataModelController.getIdeas();
         listAdapter = new FeedListAdapter<Idea>(ideas, this);
         recyclerView.setAdapter(listAdapter);
         apiManager.fetchIdeas(ideas, listAdapter);
@@ -86,7 +84,7 @@ public class IdealistActivity extends BaseActivity {
         utils = new Utils();
         dataModelController = DataModelController.getInstance();
         apiManager = new ApiManager();
-        ideas = dataModelController.getIdeas();
+        ideas = new ArrayList<Idea>();
     }
 
     /** Go back to the clusters view. */
