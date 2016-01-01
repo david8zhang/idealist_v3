@@ -43,40 +43,25 @@ public class ApiManager {
     public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
         DataModelController dmc = DataModelController.getInstance();
         String clusterId = dmc.getClusterID();
-        System.out.println(clusterId);
+        System.out.println("clusterid = " + clusterId);
         Map<String, String> headers = new HashMap<>();
         Map<String, String> params = new HashMap<>();
         headers.put("Authorization", "Bearer 1450909428");
         String ideaUrl = Constants.IDEAS + "?clusterid=" + clusterId;
         System.out.println(ideaUrl);
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(ideaUrl);
-        if(entry != null) {
-            //Fetch the data from cache
-            try {
-                String data = new String(entry.data, "UTF-8");
-                System.out.println(data);
-                utils.parseIdeaJson(new JSONObject(data), listAdapter, ideas);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+        GetRequest request = new GetRequest(headers, params, ideaUrl, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println(jsonObject);
+                utils.parseIdeaJson(jsonObject, listAdapter, ideas);
             }
-        } else {
-            GetRequest request = new GetRequest(headers, params, ideaUrl, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    System.out.println(jsonObject);
-                    utils.parseIdeaJson(jsonObject, listAdapter, ideas);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    System.out.println(volleyError);
-                }
-            });
-            AppController.getInstance().addToRequestQueue(request);
-        }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        });
+        AppController.getInstance().addToRequestQueue(request);
     }
 
     /** Fetch a list of clusters given the user_id. */
@@ -122,6 +107,45 @@ public class ApiManager {
                 params.put("name", name);
                 params.put("description", description);
                 params.put("userid", "0bfc174eef549715f1448496b854dd810a8a72cb");
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer 1450909428");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    /** Post a new idea with the given NAME, CATEGORY, and DESCRIPTION. */
+    public void postIdea(final String name, final String category, final String description) {
+        DataModelController dmc = DataModelController.getInstance();
+        String ideaUrl = Constants.IDEAS;
+        final String cluster_id = dmc.getClusterID();
+        final StringRequest request = new StringRequest(Request.Method.POST, ideaUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        System.out.println(s);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("name", name);
+                params.put("category", category);
+                params.put("description", description);
+                params.put("cluster_id", cluster_id);
                 return params;
             }
 

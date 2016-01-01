@@ -2,6 +2,7 @@ package com.example.david_000.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -55,6 +56,17 @@ public class IdealistActivity extends BaseActivity {
         View childView = getLayoutInflater().inflate(R.layout.activity_ideas, null);
         mContentLayout.addView(childView);
 
+
+        //Map the action button
+        FloatingActionButton newCluster = (FloatingActionButton)findViewById(R.id.new_idea);
+        newCluster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(IdealistActivity.this, PostIdeaActivity.class);
+                IdealistActivity.this.startActivity(intent);
+            }
+        });
+
         // Set up the recycler view.
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -65,6 +77,8 @@ public class IdealistActivity extends BaseActivity {
         listAdapter = new FeedListAdapter<Idea>(ideas, this);
         recyclerView.setAdapter(listAdapter);
         apiManager.fetchIdeas(ideas, listAdapter);
+
+
     }
 
     @Override

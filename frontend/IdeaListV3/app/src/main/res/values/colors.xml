@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="idealist_light">#8FFF8F</color>
     <color name="idealist_primary">#4CBB17</color>
     <color name="idealist_primary_dark">#005100</color>
     <color name="black">#000000</color>

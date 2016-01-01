@@ -8,12 +8,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.example.david_000.api.ApiManager;
-import com.example.david_000.controller.DataModelController;
-import com.example.david_000.model.Cluster;
-import com.example.david_000.utils.Utils;
-
-import java.util.ArrayList;
-
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**

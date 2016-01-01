@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/lightbulb"
+        android:src="@drawable/new_cluster"
         android:clickable="true"
         app:elevation="0dp"
         app:backgroundTint="@color/idealist_primary" />
