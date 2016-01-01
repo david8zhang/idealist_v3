@@ -1,7 +1,9 @@
 package com.example.david_000.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -57,6 +59,16 @@ public class MainActivity extends BaseActivity {
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView = (RecyclerView)childView.findViewById(R.id.cluster_list);
         recyclerView.setLayoutManager(llm);
+
+        // Set up the post new cluster button
+        FloatingActionButton newCluster = (FloatingActionButton)findViewById(R.id.new_cluster);
+        newCluster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, PostClusterActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
 
         // Instantiate the view adapter.
         ArrayList<Cluster> clusters = dataModelController.getClusters();

@@ -1,9 +1,14 @@
 package com.example.david_000.api;
 
+import android.app.DownloadManager;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.david_000.controller.AppController;
 import com.example.david_000.controller.DataModelController;
 import com.example.david_000.controller.FeedListAdapter;
@@ -80,34 +85,55 @@ public class ApiManager {
         Map<String, String> params = new HashMap<String, String> ();
         headers.put("Authorization", "Bearer 1450909428");
         String clusterUrl = Constants.CLUSTERS + "?userid=0bfc174eef549715f1448496b854dd810a8a72cb";
-        Cache cache = AppController.getInstance().getRequestQueue().getCache();
-        Cache.Entry entry = cache.get(clusterUrl);
-        //TODO: Prevent this goddamn thing from making two requests when the device is rotated
-        if(entry != null) {
-            //fetch the data from cache
-            try {
-                String data = new String(entry.data, "UTF-8");
-                utils.parseClusterJson(new JSONObject(data),listAdapter, clusters);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+        GetRequest request = new GetRequest(headers, params, clusterUrl, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                System.out.println(jsonObject);
+                utils.parseClusterJson(jsonObject, listAdapter, clusters);
             }
-        } else {
-            GetRequest request = new GetRequest(headers, params, clusterUrl, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    System.out.println(jsonObject);
-                    utils.parseClusterJson(jsonObject, listAdapter, clusters);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    System.out.println(volleyError);
-                }
-            });
-            request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            AppController.getInstance().addToRequestQueue(request);
-        }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        });
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    /** Post a new cluster with the given NAME and DESCRIPTION. */
+    public void postCluster(final String name, final String description) {
+        String clusterUrl = Constants.CLUSTERS;
+        final StringRequest request = new StringRequest(Request.Method.POST, clusterUrl,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        System.out.println(s);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("name", name);
+                params.put("description", description);
+                params.put("userid", "0bfc174eef549715f1448496b854dd810a8a72cb");
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer 1450909428");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
     }
 }
