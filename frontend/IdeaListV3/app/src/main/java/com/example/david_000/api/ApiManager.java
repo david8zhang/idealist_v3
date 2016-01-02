@@ -1,9 +1,16 @@
 package com.example.david_000.api;
 
-import android.app.DownloadManager;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Environment;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -20,10 +27,17 @@ import com.example.david_000.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by david_000 on 12/27/2015.
@@ -33,7 +47,11 @@ public class ApiManager {
     /** Utilities. */
     private Utils utils;
 
-    public ApiManager() {
+    /** The current application context (Used for AWS).*/
+    private Context context;
+
+    public ApiManager(Context context) {
+        this.context = context;
         utils = new Utils();
     }
 
@@ -122,16 +140,46 @@ public class ApiManager {
         AppController.getInstance().addToRequestQueue(request);
     }
 
-    /** Post a new idea with the given NAME, CATEGORY, and DESCRIPTION. */
-    public void postIdea(final String name, final String category, final String description) {
-        DataModelController dmc = DataModelController.getInstance();
+
+    /**
+     * Post an idea to the AWS DynamoDB, with params for the idea params and a boolean to
+     * determine if there is an image to be sent through
+     * @param name
+     * @param category
+     * @param description
+     * @param hasImage
+     */
+    public void postIdea(final String name, final String category, final String description, final boolean hasImage) {
+        final DataModelController dmc = DataModelController.getInstance();
         String ideaUrl = Constants.IDEAS;
+        String imageUrl = null;
+
+        // Initialize the Amazon Cognito credentials provider
+        final CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                context,
+                "us-east-1:5fba2532-65fc-4d04-8272-a508dfb32f24", // Identity Pool ID
+                Regions.US_EAST_1 // Region
+        );
+
         final String cluster_id = dmc.getClusterID();
         final StringRequest request = new StringRequest(Request.Method.POST, ideaUrl,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
-                        System.out.println(s);
+                        final String imgParams = s;
+                        //Add the sketched image if it exists
+                        if(hasImage) {
+                            AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void> () {
+                                @Override
+                                protected Void doInBackground(Void... voids) {
+                                    File photoFile = convertImage(dmc.getIdea_image(), imgParams);
+                                    AmazonS3Client amazonS3Client = new AmazonS3Client(credentialsProvider.getCredentials());
+                                    PutObjectRequest por = new PutObjectRequest("idealist-sketches", imgParams, photoFile);
+                                    amazonS3Client.putObject(por);
+                                    return null;
+                                }
+                            }.execute();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -146,6 +194,12 @@ public class ApiManager {
                 params.put("category", category);
                 params.put("description", description);
                 params.put("cluster_id", cluster_id);
+
+                //If there is no image, set the image_url to string url (so the backend knows
+                //to change the image_url to null instead of to the default s3 link.
+                if(!hasImage) {
+                    params.put("image_url", "null");
+                }
                 return params;
             }
 
@@ -160,4 +214,27 @@ public class ApiManager {
         request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         AppController.getInstance().addToRequestQueue(request);
     }
+
+    /** Convert an image to a JPEG. */
+    File convertImage(Bitmap bmp, String name) {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/saved_images");
+        myDir.mkdirs();
+        Random generator = new Random();
+        int n = 10000;
+        n = generator.nextInt(n);
+        String fname = name + ".jpg";
+        File file = new File(myDir, fname);
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
 }

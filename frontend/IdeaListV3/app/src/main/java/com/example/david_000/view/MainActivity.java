@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity {
     public void initializeDataModel() {
         utils = new Utils();
         dataModelController = DataModelController.getInstance();
-        apiManager = new ApiManager();
+        apiManager = new ApiManager(this);
         clusters = dataModelController.getClusters();
     }
 

@@ -97,7 +97,7 @@ public class IdealistActivity extends BaseActivity {
     public void initializeDataModel() {
         utils = new Utils();
         dataModelController = DataModelController.getInstance();
-        apiManager = new ApiManager();
+        apiManager = new ApiManager(this);
         ideas = new ArrayList<Idea>();
     }
 

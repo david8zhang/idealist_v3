@@ -31,7 +31,7 @@ public class PostClusterActivity extends BaseActivity {
         mContentLayout.addView(childView);
 
         //Instantiate api manager
-        apiManager = new ApiManager();
+        apiManager = new ApiManager(this);
 
         //Grab the text and send it as a post request
         Button button = (Button)findViewById(R.id.create_cluster);

@@ -50,7 +50,7 @@ public class PostIdeaActivity extends BaseActivity {
         mContentLayout.addView(childView);
 
         //Instantiate api manager
-        apiManager = new ApiManager();
+        apiManager = new ApiManager(this);
 
         //Map the sketch image button to a new activity
         ImageButton imgButton = (ImageButton)findViewById(R.id.sketch_button);
@@ -100,7 +100,11 @@ public class PostIdeaActivity extends BaseActivity {
                             .setContentText("You must enter a category!")
                             .show();
                 } else {
-                    apiManager.postIdea(name, cat, desc);
+                    if(sketch) {
+                        apiManager.postIdea(name, cat, desc, true);
+                    } else {
+                        apiManager.postIdea(name, cat, desc, false);
+                    }
                     new SweetAlertDialog(PostIdeaActivity.this, SweetAlertDialog.SUCCESS_TYPE)
                             .setTitleText("Success!")
                             .setContentText("The idea was successfully posted!")
