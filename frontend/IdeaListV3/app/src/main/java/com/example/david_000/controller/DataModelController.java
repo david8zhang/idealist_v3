@@ -1,5 +1,7 @@
 package com.example.david_000.controller;
 
+import android.graphics.Bitmap;
+
 import com.example.david_000.model.Cluster;
 import com.example.david_000.model.Idea;
 
@@ -27,6 +29,9 @@ public class DataModelController {
 
     /** Idea ID that was clicked (null if none were clicked at all). */
     private String ideaId = null;
+
+    /** The bitmap image associated with the idea. */
+    private Bitmap idea_image = null;
 
     public DataModelController() {}
 
@@ -69,5 +74,13 @@ public class DataModelController {
 
     public void setIsCluster(boolean isCluster) {
         this.isCluster = isCluster;
+    }
+
+    public Bitmap getIdea_image() {
+        return idea_image;
+    }
+
+    public void setIdea_image(Bitmap idea_image) {
+        this.idea_image = idea_image;
     }
 }
