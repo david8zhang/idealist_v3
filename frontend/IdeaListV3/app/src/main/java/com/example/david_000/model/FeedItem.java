@@ -15,11 +15,11 @@ public class FeedItem implements Comparable {
     private String name;
     private String description;
     private String category;
-    private Bitmap image;
+    private String image;
 
     public FeedItem() {}
 
-    public FeedItem(String user_id, String cluster_id, String timestamp, String idea_id, String name, String description, String category, Bitmap image) {
+    public FeedItem(String user_id, String cluster_id, String timestamp, String idea_id, String name, String description, String category, String image) {
         this.user_id = user_id;
         this.cluster_id = cluster_id;
         this.timestamp = timestamp;
@@ -68,11 +68,11 @@ public class FeedItem implements Comparable {
         this.category = category;
     }
 
-    public Bitmap getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(Bitmap image) {
+    public void setImage(String image) {
         this.image = image;
     }
 

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,11 +15,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.example.david_000.model.FeedItem;
+import com.example.david_000.view.IdeaSketchView;
 import com.example.david_000.view.IdealistActivity;
 import com.example.david_000.view.MainActivity;
 import com.example.david_000.view.R;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 /**
@@ -113,11 +120,14 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
      */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         FeedItem item = items.get(position);
         String name = item.getName();
         String cat = item.getCategory();
         String desc = item.getDescription();
-        Bitmap img = item.getImage();
+        String img = item.getImage();
+
+        System.out.println(img);
 
         ImageView imgView = holder.imgView;
         TextView nameView = holder.nameView;
@@ -134,7 +144,7 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         descView.setText(desc);
 
         if(img != null) {
-            imgView.setImageBitmap(img);
+            new DownloadImageTask(imgView).execute(item.getImage());
         } else {
             imgView.setVisibility(View.GONE);
         }
@@ -142,6 +152,35 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
             catView.setText(cat);
         } else {
             catView.setVisibility(View.GONE);
+        }
+    }
+
+    private static class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        /** the associated imageView. */
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            String urldisplay = strings[0];
+            Bitmap bmp = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                bmp = BitmapFactory.decodeStream(in);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return bmp;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
         }
     }
 

@@ -34,6 +34,7 @@ public class Utils {
                     idea.setDescription(feedObj.getString("description"));
                     idea.setIdea_Id(feedObj.getString("idea_id"));
                     idea.setCluster_id(feedObj.getString("cluster_id"));
+                    idea.setImage(feedObj.getString("image_url"));
                     if(!isContainsIdeas(idea, ideas)) {
                         ideas.add(idea);
                         listAdapter.notifyDataSetChanged();
