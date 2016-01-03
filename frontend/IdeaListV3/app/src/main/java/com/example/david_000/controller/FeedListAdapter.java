@@ -132,13 +132,13 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
                     dmc.setClusterTime(vh.clusterTime);
                     new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE)
                             .setTitleText("Warning!")
-                            .setContentText("Edit or Delete Cluster?")
-                            .setCancelText("Delete")
+                            .setContentText("Edit Cluster?")
+                            .setCancelText("Exit")
                             .setConfirmText("Edit")
                             .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                    System.out.println("Delete the cluster!");
+                                    sweetAlertDialog.cancel();
                                 }
                             })
                             .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {

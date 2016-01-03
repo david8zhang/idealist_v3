@@ -1,8 +1,10 @@
 package com.example.david_000.view;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +47,8 @@ public class MainActivity extends BaseActivity {
     /** The FeedListAdapter. */
     private FeedListAdapter listAdapter;
 
+    /** The boolean indicating there is an updated cluster. */
+    private boolean update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,18 @@ public class MainActivity extends BaseActivity {
 
         //Initialize data models.
         initializeDataModel();
+
+        //If user updated
+        if(savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                update = false;
+            } else {
+                update = extras.getBoolean("updated");
+            }
+        } else {
+            update = (Boolean)savedInstanceState.getSerializable("updated");
+        }
 
         // Inflate the child layout
         mContentLayout  = (LinearLayout) findViewById(R.id.content_layout);
@@ -80,6 +96,10 @@ public class MainActivity extends BaseActivity {
         listAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(listAdapter);
         apiManager.fetchCluster(clusters, listAdapter);
+
+        if(update) {
+            refresh();
+        }
     }
 
     @Override
@@ -89,6 +109,7 @@ public class MainActivity extends BaseActivity {
         return true;
     }
 
+    /** Menu options selection. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return false;
@@ -106,5 +127,15 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         System.exit(0);
+    }
+
+    /** Refresh the activity. */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void refresh() {
+        clusters.clear();
+        apiManager.fetchCluster(clusters, listAdapter);
+        dataModelController.setClusters(clusters);
+        listAdapter.notifyDataSetChanged();
+
     }
 }

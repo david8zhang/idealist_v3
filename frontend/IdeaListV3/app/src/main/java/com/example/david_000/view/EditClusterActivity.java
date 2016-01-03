@@ -91,6 +91,7 @@ public class EditClusterActivity extends BaseActivity {
                                 if (!finalNewName.equals(oldName) || !finalNewDesc.equals(oldDesc)) {
                                     apiManager.putCluster(finalNewName, finalNewDesc);
                                     Intent intent = new Intent(EditClusterActivity.this, MainActivity.class);
+                                    intent.putExtra("updated", true);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                 } else {
@@ -103,6 +104,32 @@ public class EditClusterActivity extends BaseActivity {
             }
         });
 
-
+        Button deleteCluster = (Button)findViewById(R.id.delete_cluster);
+        deleteCluster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SweetAlertDialog(EditClusterActivity.this, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Warning!")
+                        .setContentText("Deleting will delete all ideas! Are you sure?")
+                        .setConfirmText("OK")
+                        .setCancelText("Cancel")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                apiManager.deleteCluster();
+                                Intent intent = new Intent(EditClusterActivity.this, MainActivity.class);
+                                intent.putExtra("updated", true);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                            }
+                        })
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.cancel();
+                            }
+                        }).show();
+            }
+        });
     }
 }
