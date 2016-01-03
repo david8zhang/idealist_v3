@@ -65,6 +65,8 @@ public class EditIdeaActivity extends BaseActivity {
             sketch = (Boolean)savedInstanceState.getSerializable("Drawn");
         }
 
+        System.out.println(sketch);
+
         // Inflate the child layout
         mContentLayout = (LinearLayout)findViewById(R.id.content_layout);
         View childView = getLayoutInflater().inflate(R.layout.activity_edit_idea, null);
@@ -144,17 +146,11 @@ public class EditIdeaActivity extends BaseActivity {
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                if (!finalNewName.equals(oldName) || !finalNewDesc.equals(oldDesc) || !finalNewCat.equals(oldCat)) {
-                                    apiManager.putIdea(finalNewName, finalNewCat, finalNewDesc, sketch);
-                                    Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
-                                    intent.putExtra("updated", true);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(intent);
-                                } else {
-                                    Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    startActivity(intent);
-                                }
+                                apiManager.putIdea(finalNewName, finalNewCat, finalNewDesc, sketch);
+                                Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
+                                intent.putExtra("updated", true);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
                             }
                         }).show();
             }

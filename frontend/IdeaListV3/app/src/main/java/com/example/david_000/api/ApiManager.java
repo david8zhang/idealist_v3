@@ -291,6 +291,20 @@ public class ApiManager {
                     @Override
                     public void onResponse(String s) {
                         System.out.println(s);
+                        /** if there is an updated sketch. */
+                        if(sketch) {
+                            AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void> () {
+                                @Override
+                                protected Void doInBackground(Void... voids) {
+                                    File photoFile = convertImage(dmc.getIdea_image(), idea_id);
+                                    AmazonS3Client amazonS3Client = new AmazonS3Client(credentialsProvider.getCredentials());
+                                    PutObjectRequest por = new PutObjectRequest("idealist-sketches", idea_id, photoFile);
+                                    amazonS3Client.putObject(por);
+                                    System.out.println("Added image");
+                                    return null;
+                                }
+                            }.execute();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -319,20 +333,6 @@ public class ApiManager {
         };
         request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         AppController.getInstance().addToRequestQueue(request);
-
-        /** if there is an updated sketch. */
-        if(sketch) {
-            AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void> () {
-                @Override
-                protected Void doInBackground(Void... voids) {
-                    File photoFile = convertImage(dmc.getIdea_image(), idea_id);
-                    AmazonS3Client amazonS3Client = new AmazonS3Client(credentialsProvider.getCredentials());
-                    PutObjectRequest por = new PutObjectRequest("idealist-sketches", idea_id, photoFile);
-                    amazonS3Client.putObject(por);
-                    return null;
-                }
-            }.execute();
-        }
     }
 
     /** Delete the given idea. */
