@@ -11,7 +11,8 @@ public class FeedItem implements Comparable {
     private String user_id;
     private String cluster_id;
     private String idea_id;
-    private String timestamp;
+    private String idea_timestamp;
+    private String cluster_timestamp;
     private String name;
     private String description;
     private String category;
@@ -19,10 +20,11 @@ public class FeedItem implements Comparable {
 
     public FeedItem() {}
 
-    public FeedItem(String user_id, String cluster_id, String timestamp, String idea_id, String name, String description, String category, String image) {
+    public FeedItem(String user_id, String cluster_id, String cluster_timestamp, String idea_timestamp, String idea_id, String name, String description, String category, String image) {
         this.user_id = user_id;
         this.cluster_id = cluster_id;
-        this.timestamp = timestamp;
+        this.cluster_timestamp = cluster_timestamp;
+        this.idea_timestamp = idea_timestamp;
         this.idea_id = idea_id;
         this.name = name;
         this.description = description;
@@ -76,14 +78,6 @@ public class FeedItem implements Comparable {
         this.image = image;
     }
 
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-
     @Override
     public String toString() {
         return  "user_id: " + user_id + "\n"
@@ -105,4 +99,19 @@ public class FeedItem implements Comparable {
     }
 
 
+    public String getIdea_timestamp() {
+        return idea_timestamp;
+    }
+
+    public void setIdea_timestamp(String idea_timestamp) {
+        this.idea_timestamp = idea_timestamp;
+    }
+
+    public String getCluster_timestamp() {
+        return cluster_timestamp;
+    }
+
+    public void setCluster_timestamp(String cluster_timestamp) {
+        this.cluster_timestamp = cluster_timestamp;
+    }
 }

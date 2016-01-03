@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.example.david_000.model.FeedItem;
+import com.example.david_000.view.EditClusterActivity;
 import com.example.david_000.view.IdeaSketchView;
 import com.example.david_000.view.IdealistActivity;
 import com.example.david_000.view.MainActivity;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by david_000 on 12/20/2015.
@@ -74,6 +77,12 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         /** the idea id associated with this view holder. */
         public String ideaId;
 
+        /** The timestamp associated with the cluster. */
+        public String clusterTime;
+
+        /** The timestamp associated with the didea.*/
+        public String ideaTime;
+
         public ViewHolder(View itemView) {
             super(itemView);
             mCardView = (CardView)itemView.findViewById(R.id.card_view);
@@ -102,11 +111,50 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
                     Intent intent = new Intent(mContext, IdealistActivity.class);
                     mContext.startActivity(intent);
                     dmc.setClusterID(vh.clusterId);
+                    dmc.setClusterTime(vh.clusterTime);
                     dmc.setIsCluster(false);
                 } else {
                     dmc.setIdeaId(vh.ideaId);
+                    dmc.setIdeaTime(vh.ideaTime);
                     System.out.println("Looking at ideas right now");
                 }
+            }
+        });
+
+        // Long click listener for editing and deleting clusters
+        v.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(dmc.getIsCluster()) {
+                    System.out.println(vh.clusterId);
+                    System.out.println(vh.clusterTime);
+                    dmc.setClusterID(vh.clusterId);
+                    dmc.setClusterTime(vh.clusterTime);
+                    new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Warning!")
+                            .setContentText("Edit or Delete Cluster?")
+                            .setCancelText("Delete")
+                            .setConfirmText("Edit")
+                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    System.out.println("Delete the cluster!");
+                                }
+                            })
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    //Put the existing name and description through to the activity to prepopulate the form
+                                    Intent editCluster = new Intent(mContext, EditClusterActivity.class);
+                                    editCluster.putExtra("name", vh.nameView.getText().toString());
+                                    editCluster.putExtra("description", vh.descView.getText().toString());
+                                    mContext.startActivity(editCluster);
+                                }
+                            }).show();
+                } else {
+                    //TODO: Under construction
+                }
+                return true;
             }
         });
         return vh;
@@ -127,19 +175,17 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         String desc = item.getDescription();
         String img = item.getImage();
 
-        System.out.println(img);
-
         ImageView imgView = holder.imgView;
         TextView nameView = holder.nameView;
         TextView catView = holder.catView;
         TextView descView = holder.descView;
         if(item.getCluster_id() == null) {
             holder.ideaId = item.getIdea_Id();
+            holder.ideaTime = item.getIdea_timestamp();
         } else {
             holder.clusterId = item.getCluster_id();
-
+            holder.clusterTime = item.getCluster_timestamp();
         }
-
         nameView.setText(name);
         descView.setText(desc);
 

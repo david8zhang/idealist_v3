@@ -8,6 +8,6 @@ public class Cluster extends FeedItem{
     public Cluster() {}
 
     public Cluster(String user_id, String cluster_time, String cluster_id, String name, String description) {
-        super(user_id, cluster_id, cluster_time, null, name, description, null, null);
+        super(user_id, cluster_id, cluster_time, null, null, name, description, null, null);
     }
 }

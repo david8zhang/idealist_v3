@@ -1,5 +1,7 @@
 package com.example.david_000.utils;
 
+import android.content.Context;
+
 import com.example.david_000.controller.FeedListAdapter;
 import com.example.david_000.model.Cluster;
 import com.example.david_000.model.Idea;
@@ -8,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -29,7 +32,7 @@ public class Utils {
                     JSONObject feedObj = (JSONObject)feedArray.get(i);
                     Idea idea = new Idea();
                     idea.setName(feedObj.getString("name"));
-                    idea.setTimestamp(feedObj.getString("idea_timestamp"));
+                    idea.setIdea_timestamp(feedObj.getString("idea_timestamp"));
                     idea.setCategory(feedObj.getString("category"));
                     idea.setDescription(feedObj.getString("description"));
                     idea.setIdea_Id(feedObj.getString("idea_id"));
@@ -57,7 +60,7 @@ public class Utils {
                     JSONObject feedObj = (JSONObject) feedArray.get(i);
                     Cluster cluster = new Cluster();
                     cluster.setName(feedObj.getString("name"));
-                    cluster.setTimestamp(feedObj.getString("cluster_timestamp"));
+                    cluster.setCluster_timestamp(feedObj.getString("cluster_timestamp"));
                     cluster.setDescription(feedObj.getString("description"));
                     cluster.setUser_id(feedObj.getString("user_id"));
                     cluster.setCluster_id(feedObj.getString("cluster_id"));

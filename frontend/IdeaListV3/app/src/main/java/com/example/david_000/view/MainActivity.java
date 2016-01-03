@@ -1,5 +1,6 @@
 package com.example.david_000.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.example.david_000.model.Cluster;
 import com.example.david_000.utils.Utils;
 
 import java.util.ArrayList;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 public class MainActivity extends BaseActivity {
 
@@ -41,6 +44,7 @@ public class MainActivity extends BaseActivity {
 
     /** The FeedListAdapter. */
     private FeedListAdapter listAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,7 @@ public class MainActivity extends BaseActivity {
         // Instantiate the view adapter.
         ArrayList<Cluster> clusters = dataModelController.getClusters();
         listAdapter = new FeedListAdapter<Cluster>(clusters, this);
+        listAdapter.notifyDataSetChanged();
         recyclerView.setAdapter(listAdapter);
         apiManager.fetchCluster(clusters, listAdapter);
     }

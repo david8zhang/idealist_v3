@@ -55,8 +55,6 @@ public class ApiManager {
         utils = new Utils();
     }
 
-    //TODO: Rework this somehow as to avoid having to rewrite code
-
     /** Fetch a list of ideas given the cluster_id. */
     public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
         DataModelController dmc = DataModelController.getInstance();
@@ -130,6 +128,45 @@ public class ApiManager {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer 1450909428");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    /** Update a cluster to have the given name and description. */
+    public void putCluster(final String name, final String description) {
+        final DataModelController dmc = DataModelController.getInstance();
+        final String cluster_id = dmc.getClusterID();
+        final String cluster_timestamp = dmc.getClusterTime();
+        final StringRequest request = new StringRequest(Request.Method.PUT, Constants.CLUSTERS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        System.out.println(s);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("name", name);
+                params.put("description", description);
+                params.put("cluster_id", cluster_id);
+                params.put("cluster_timestamp", cluster_timestamp);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer 1450909428");
                 headers.put("Content-Type", "application/x-www-form-urlencoded");

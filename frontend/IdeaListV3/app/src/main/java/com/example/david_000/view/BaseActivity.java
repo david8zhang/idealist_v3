@@ -24,7 +24,7 @@ public class BaseActivity extends AppCompatActivity{
     private BaseActivity mActivity;
 
     /** Toolbar for this activity. */
-    private Toolbar toolbar;
+    protected Toolbar toolbar;
 
     /** Content Layout for this instance. */
     private LinearLayout mContentLayout;

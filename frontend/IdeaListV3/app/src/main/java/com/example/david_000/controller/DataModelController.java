@@ -33,6 +33,12 @@ public class DataModelController {
     /** The bitmap image associated with the idea. */
     private Bitmap idea_image = null;
 
+    /** The cluster timestamp. */
+    private String clusterTime = null;
+
+    /** The idea timestamp. */
+    private String ideaTime = null;
+
     public DataModelController() {}
 
     /** Get an instance of the Data Model Controller. */
@@ -82,5 +88,21 @@ public class DataModelController {
 
     public void setIdea_image(Bitmap idea_image) {
         this.idea_image = idea_image;
+    }
+
+    public String getIdeaTime() {
+        return ideaTime;
+    }
+
+    public void setIdeaTime(String ideaTime) {
+        this.ideaTime = ideaTime;
+    }
+
+    public String getClusterTime() {
+        return clusterTime;
+    }
+
+    public void setClusterTime(String clusterTime) {
+        this.clusterTime = clusterTime;
     }
 }
