@@ -8,18 +8,20 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.example.david_000.api.ApiManager;
+import com.example.david_000.controller.DataModelController;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by david_000 on 1/2/2016.
  */
-public class EditClusterActivity extends BaseActivity {
+public class EditIdeaActivity extends BaseActivity {
 
-    /** The content layout. */
+    /** The Content Layout. */
     private LinearLayout mContentLayout;
 
     /** The API Manager. */
@@ -31,7 +33,12 @@ public class EditClusterActivity extends BaseActivity {
     /** The old description name. */
     private String oldDesc;
 
-    @Override
+    /** The old category name. */
+    private String oldCat;
+
+    /** True if user sketched something for the idea. */
+    private boolean sketch;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -43,65 +50,108 @@ public class EditClusterActivity extends BaseActivity {
             if(extras == null) {
                 oldName = null;
                 oldDesc = null;
+                oldCat = null;
+                sketch = false;
             } else {
                 oldName = extras.getString("name");
                 oldDesc = extras.getString("description");
+                oldCat = extras.getString("category");
+                sketch = extras.getBoolean("Drawn");
             }
         } else {
             oldName = (String)savedInstanceState.getSerializable("name");
             oldDesc = (String)savedInstanceState.getSerializable("description");
+            oldCat = (String)savedInstanceState.getSerializable("category");
+            sketch = (Boolean)savedInstanceState.getSerializable("Drawn");
         }
 
         // Inflate the child layout
         mContentLayout = (LinearLayout)findViewById(R.id.content_layout);
-        View childView = getLayoutInflater().inflate(R.layout.activity_edit_cluster, null);
+        View childView = getLayoutInflater().inflate(R.layout.activity_edit_idea, null);
         mContentLayout.addView(childView);
 
         //Instantiate api manager
         apiManager = new ApiManager(this);
 
-        final EditText clusterName = (EditText)findViewById(R.id.edit_cluster_name);
-        final EditText clusterDesc = (EditText)findViewById(R.id.edit_cluster_description);
+        final EditText ideaName = (EditText)findViewById(R.id.edit_idea_name);
+        final EditText ideaDesc = (EditText)findViewById(R.id.edit_idea_description);
+        final EditText ideaCat = (EditText)findViewById(R.id.edit_idea_category);
 
-        clusterName.setHint(oldName);
-        clusterDesc.setHint(oldDesc);
+        ideaName.setHint(oldName);
+        ideaDesc.setHint(oldDesc);
+        ideaCat.setHint(oldCat);
+
+        //Set th click listener for the image button
+        ImageButton imageButton = (ImageButton)findViewById(R.id.edit_sketch);
+
+        //Set the new image
+        if(sketch) {
+            DataModelController dmc = DataModelController.getInstance();
+            imageButton.setBackgroundColor(Color.WHITE);
+            imageButton.setImageBitmap(dmc.getIdea_image());
+        }
+
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent drawAct = new Intent(EditIdeaActivity.this, DrawActivity.class);
+                drawAct.putExtra("Edit", true);
+                drawAct.putExtra("name", oldName);
+                drawAct.putExtra("description", oldDesc);
+                drawAct.putExtra("category", oldCat);
+                EditIdeaActivity.this.startActivity(drawAct);
+            }
+        });
 
         //Set the click listener for the button
-        Button editCluster = (Button)findViewById(R.id.edit_cluster);
+        Button editCluster = (Button)findViewById(R.id.edit_idea);
         editCluster.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
 
-                EditText editName = clusterName;
-                EditText editDesc = clusterDesc;
+                EditText editName = ideaName;
+                EditText editDesc = ideaDesc;
+                EditText editCat = ideaCat;
 
                 String newName = editName.getText().toString();
                 String newDesc = editDesc.getText().toString();
+                String newCat = editCat.getText().toString();
 
-                if(newName.equals("")) {
+                if (newName.equals("")) {
                     newName = oldName;
                 }
-                if(newDesc.equals("")) {
+                if (newDesc.equals("")) {
                     newDesc = oldDesc;
+                }
+                if (newCat.equals("")) {
+                    newCat = oldCat;
                 }
                 final String finalNewName = newName;
                 final String finalNewDesc = newDesc;
-                new SweetAlertDialog(EditClusterActivity.this, SweetAlertDialog.WARNING_TYPE)
+                final String finalNewCat = newCat;
+                new SweetAlertDialog(EditIdeaActivity.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("Warning!")
                         .setContentText("Are you sure you want to edit?")
+                        .setCancelText("Exit")
+                        .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                sweetAlertDialog.cancel();
+                            }
+                        })
                         .setConfirmText("OK")
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                if (!finalNewName.equals(oldName) || !finalNewDesc.equals(oldDesc)) {
-                                    apiManager.putCluster(finalNewName, finalNewDesc);
-                                    Intent intent = new Intent(EditClusterActivity.this, MainActivity.class);
+                                if (!finalNewName.equals(oldName) || !finalNewDesc.equals(oldDesc) || !finalNewCat.equals(oldCat)) {
+                                    apiManager.putIdea(finalNewName, finalNewCat, finalNewDesc, sketch);
+                                    Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
                                     intent.putExtra("updated", true);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                 } else {
-                                    Intent intent = new Intent(EditClusterActivity.this, MainActivity.class);
+                                    Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                 }
@@ -110,21 +160,21 @@ public class EditClusterActivity extends BaseActivity {
             }
         });
 
-        Button deleteCluster = (Button)findViewById(R.id.delete_cluster);
+        Button deleteCluster = (Button)findViewById(R.id.delete_idea);
         deleteCluster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new SweetAlertDialog(EditClusterActivity.this, SweetAlertDialog.WARNING_TYPE)
+                new SweetAlertDialog(EditIdeaActivity.this, SweetAlertDialog.WARNING_TYPE)
                         .setTitleText("Warning!")
-                        .setContentText("Deleting will delete all ideas! Are you sure?")
+                        .setContentText("This cannot be undone! Are you sure?")
                         .setConfirmText("OK")
                         .setCancelText("Cancel")
                         .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                             @Override
                             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                apiManager.deleteCluster();
+                                apiManager.deleteIdea();
                                 final int[] i = {-1};
-                                final SweetAlertDialog pDialog = new SweetAlertDialog(EditClusterActivity.this, SweetAlertDialog.PROGRESS_TYPE);
+                                final SweetAlertDialog pDialog = new SweetAlertDialog(EditIdeaActivity.this, SweetAlertDialog.PROGRESS_TYPE);
                                 pDialog.getProgressHelper().setBarColor(Color.parseColor("#FF9B00"));
                                 pDialog.setTitleText("Deleting");
                                 pDialog.setCancelable(false);
@@ -164,7 +214,7 @@ public class EditClusterActivity extends BaseActivity {
                                                 .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                                                     @Override
                                                     public void onClick(SweetAlertDialog sweetAlertDialog) {
-                                                        Intent intent = new Intent(EditClusterActivity.this, MainActivity.class);
+                                                        Intent intent = new Intent(EditIdeaActivity.this, IdealistActivity.class);
                                                         intent.putExtra("updated", true);
                                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                         startActivity(intent);

@@ -21,11 +21,39 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
     /** The different options. */
     private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn;
 
+    /** boolean indicating if this is an edit image. */
+    private boolean edit;
+
     /** The brush sizes. */
     private float smallBrush, mediumBrush, largeBrush;
 
+    /** Strings that correspond to the old names, category and descriptions of ideas. */
+    private String oldCat, oldName, oldDesc;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set the sketch variable
+        if(savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                edit = false;
+                oldCat = null;
+                oldName = null;
+                oldDesc = null;
+            } else {
+                edit = extras.getBoolean("Edit");
+                oldName = extras.getString("name");
+                oldCat = extras.getString("category");
+                oldDesc = extras.getString("description");
+            }
+        } else {
+            edit = (Boolean)savedInstanceState.getSerializable("Edit");
+            oldName = (String)savedInstanceState.getSerializable("name");
+            oldCat = (String)savedInstanceState.getSerializable("category");
+            oldDesc = (String)savedInstanceState.getSerializable("description");
+        }
+
         setContentView(R.layout.activity_drawing_pad);
 
         drawView = (DrawingView)findViewById(R.id.drawing);
@@ -170,18 +198,27 @@ public class DrawActivity extends AppCompatActivity implements View.OnClickListe
             AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
             saveDialog.setTitle("Save drawing");
             saveDialog.setMessage("Save drawing to device Gallery?");
-            saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
+            saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
                     //save drawing
-                    Intent intent = new Intent(DrawActivity.this, PostIdeaActivity.class);
-                    intent.putExtra("Drawn", true);
                     drawView.saveImage();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    DrawActivity.this.startActivity(intent);
+                    if (edit) {
+                        Intent intent = new Intent(DrawActivity.this, EditIdeaActivity.class);
+                        intent.putExtra("Drawn", true);
+                        intent.putExtra("name", oldName);
+                        intent.putExtra("category", oldCat);
+                        intent.putExtra("description", oldDesc);
+                        DrawActivity.this.startActivity(intent);
+                    } else {
+                        Intent intent = new Intent(DrawActivity.this, PostIdeaActivity.class);
+                        intent.putExtra("Drawn", true);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        DrawActivity.this.startActivity(intent);
+                    }
                 }
             });
-            saveDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
+            saveDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                 }
             });

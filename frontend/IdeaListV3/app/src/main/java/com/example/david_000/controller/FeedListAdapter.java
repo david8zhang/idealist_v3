@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.david_000.model.FeedItem;
 import com.example.david_000.view.EditClusterActivity;
+import com.example.david_000.view.EditIdeaActivity;
 import com.example.david_000.view.IdeaSketchView;
 import com.example.david_000.view.IdealistActivity;
 import com.example.david_000.view.MainActivity;
@@ -152,7 +153,31 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
                                 }
                             }).show();
                 } else {
-                    //TODO: Under construction
+                    System.out.println(vh.ideaId);
+                    System.out.println(vh.ideaTime);
+                    dmc.setIdeaId(vh.ideaId);
+                    dmc.setIdeaTime(vh.ideaTime);
+                    new SweetAlertDialog(mContext, SweetAlertDialog.WARNING_TYPE)
+                            .setTitleText("Warning!")
+                            .setContentText("Edit Idea?")
+                            .setCancelText("Exit")
+                            .setConfirmText("Edit")
+                            .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    sweetAlertDialog.cancel();
+                                }
+                            })
+                            .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                                @Override
+                                public void onClick(SweetAlertDialog sweetAlertDialog) {
+                                    Intent editIdea = new Intent(mContext, EditIdeaActivity.class);
+                                    editIdea.putExtra("name", vh.nameView.getText().toString());
+                                    editIdea.putExtra("category", vh.catView.getText().toString());
+                                    editIdea.putExtra("description", vh.descView.getText().toString());
+                                    mContext.startActivity(editIdea);
+                                }
+                            }).show();
                 }
                 return true;
             }
@@ -179,7 +204,7 @@ public class FeedListAdapter <T extends FeedItem> extends RecyclerView.Adapter<F
         TextView nameView = holder.nameView;
         TextView catView = holder.catView;
         TextView descView = holder.descView;
-        if(item.getCluster_id() == null) {
+        if(item.getUser_id() == null) {
             holder.ideaId = item.getIdea_Id();
             holder.ideaTime = item.getIdea_timestamp();
         } else {

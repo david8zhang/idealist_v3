@@ -66,6 +66,7 @@ public class PostIdeaActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent drawAct = new Intent(PostIdeaActivity.this, DrawActivity.class);
+                finish();
                 PostIdeaActivity.this.startActivity(drawAct);
             }
         });
@@ -112,6 +113,7 @@ public class PostIdeaActivity extends BaseActivity {
                                 @Override
                                 public void onClick(SweetAlertDialog sweetAlertDialog) {
                                     Intent intent = new Intent(PostIdeaActivity.this, IdealistActivity.class);
+                                    finish();
                                     startActivity(intent);
                                 }
                             }).show();

@@ -1,6 +1,8 @@
 package com.example.david_000.view;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,12 +46,26 @@ public class IdealistActivity extends BaseActivity {
     /** The FeedListAdapter. */
     private FeedListAdapter listAdapter;
 
+    /** The boolean indicating there is an updated idea. */
+    private boolean update;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //Initialize data models.
         initializeDataModel();
+
+        if(savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                update = false;
+            } else {
+                update = extras.getBoolean("updated");
+            }
+        } else {
+            update = false;
+        }
 
         // Inflate the child layout
         mContentLayout  = (LinearLayout) findViewById(R.id.content_layout);
@@ -78,7 +94,9 @@ public class IdealistActivity extends BaseActivity {
         recyclerView.setAdapter(listAdapter);
         apiManager.fetchIdeas(ideas, listAdapter);
 
-
+        if(update) {
+            refresh();
+        }
     }
 
     @Override
@@ -109,5 +127,13 @@ public class IdealistActivity extends BaseActivity {
         Intent mainIntent = new Intent(this, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainIntent);
+    }
+
+    /** Refresh the activity. */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void refresh() {
+        ideas.clear();
+        apiManager.fetchIdeas(ideas, listAdapter);
+        listAdapter.notifyDataSetChanged();
     }
 }

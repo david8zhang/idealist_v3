@@ -9,7 +9,9 @@ import android.preference.PreferenceActivity;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.transform.XmlResponsesSaxParser;
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -55,16 +57,13 @@ public class ApiManager {
     public void fetchIdeas(final ArrayList<Idea> ideas, final FeedListAdapter listAdapter) {
         DataModelController dmc = DataModelController.getInstance();
         String clusterId = dmc.getClusterID();
-        System.out.println("clusterid = " + clusterId);
         Map<String, String> headers = new HashMap<>();
         Map<String, String> params = new HashMap<>();
         headers.put("Authorization", "Bearer 1450909428");
         String ideaUrl = Constants.IDEAS + "?clusterid=" + clusterId;
-        System.out.println(ideaUrl);
         GetRequest request = new GetRequest(headers, params, ideaUrl, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                System.out.println(jsonObject);
                 utils.parseIdeaJson(jsonObject, listAdapter, ideas);
             }
         }, new Response.ErrorListener() {
@@ -214,7 +213,6 @@ public class ApiManager {
     public void postIdea(final String name, final String category, final String description, final boolean hasImage) {
         final DataModelController dmc = DataModelController.getInstance();
         String ideaUrl = Constants.IDEAS;
-        String imageUrl = null;
 
         // Initialize the Amazon Cognito credentials provider
         final CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
@@ -267,6 +265,95 @@ public class ApiManager {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer 1450909428");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
+    }
+
+    /** PUT an idea to DynamoDB. */
+    public void putIdea(final String name, final String category, final String description, final boolean sketch) {
+        // Initialize the Amazon Cognito credentials provider
+        final CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                context,
+                "us-east-1:5fba2532-65fc-4d04-8272-a508dfb32f24", // Identity Pool ID
+                Regions.US_EAST_1 // Region
+        );
+        final DataModelController dmc = DataModelController.getInstance();
+        final String idea_id = dmc.getIdeaId();
+        final String idea_timestamp = dmc.getIdeaTime();
+        final StringRequest request = new StringRequest(Request.Method.PUT, Constants.IDEAS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        System.out.println(s);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("name", name);
+                params.put("category", category);
+                params.put("description", description);
+                params.put("idea_id", idea_id);
+                params.put("idea_timestamp", idea_timestamp);
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer 1450909428");
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        request.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        AppController.getInstance().addToRequestQueue(request);
+
+        /** if there is an updated sketch. */
+        if(sketch) {
+            AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void> () {
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    File photoFile = convertImage(dmc.getIdea_image(), idea_id);
+                    AmazonS3Client amazonS3Client = new AmazonS3Client(credentialsProvider.getCredentials());
+                    PutObjectRequest por = new PutObjectRequest("idealist-sketches", idea_id, photoFile);
+                    amazonS3Client.putObject(por);
+                    return null;
+                }
+            }.execute();
+        }
+    }
+
+    /** Delete the given idea. */
+    public void deleteIdea() {
+        DataModelController dmc = DataModelController.getInstance();
+        String url = Constants.IDEAS + "?ideaid=" + dmc.getIdeaId() +
+                "&ideatimestamp=" + dmc.getIdeaTime();
+        System.out.println(url);
+        StringRequest request = new StringRequest(Request.Method.DELETE, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                System.out.println(s);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                System.out.println(volleyError);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Authorization", "Bearer 1450909428");
                 headers.put("Content-Type", "application/x-www-form-urlencoded");

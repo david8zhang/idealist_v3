@@ -136,6 +136,5 @@ public class MainActivity extends BaseActivity {
         apiManager.fetchCluster(clusters, listAdapter);
         dataModelController.setClusters(clusters);
         listAdapter.notifyDataSetChanged();
-
     }
 }
